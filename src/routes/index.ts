@@ -1,16 +1,20 @@
 import express from "express";
-import climate from "./climateRouter";
+import { coletaDados } from "../scraping/coletaDados";
+import fs from "fs";
 
 const routes = (app: express.Application) => {
   app.get("/", (req: express.Request, res: express.Response) => {
-    res.status(200).json({
-      message: "GetGET API",
-    });
+    coletaDados();
+
+    const noticias = fs.readFileSync("noticias.json", "utf-8");
+    const noticiasObj = JSON.parse(noticias);
+
+    res.json(noticiasObj);
   });
 
-  app.use(
-    "/climate", climate
-  );
+  // app.use(
+
+  // );
 
 };
 
