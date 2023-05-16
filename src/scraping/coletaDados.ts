@@ -5,6 +5,8 @@ import { load } from "cheerio";
 import { Noticia } from "../interfaces/Noticia";
 import { ConfiguracaoSite } from "../interfaces/ConfiguracaoSite";
 
+import { preprocessarTexto } from "../utils/preprocessamento";
+
 export const coletaDadosSite = async (config: ConfiguracaoSite): Promise<Noticia[]> => {
   const response = await axios.get(config.urlBase);
   const html = response.data;
@@ -39,9 +41,15 @@ export const coletaDadosSite = async (config: ConfiguracaoSite): Promise<Noticia
 
   }));
 
-  const noticiasFiltradas = noticias.filter(noticia => noticia !== null) as Noticia[]; // Filtra as noticias que não são nulas  
+  // use a função preprocessarTexto para processar o texto de cada notícia
+  const noticiasProcessadas = noticias.map(noticia => {
+    if (noticia !== null) {
+      return preprocessarTexto(noticia);
+    }
+    return null;
+  });
 
-  return noticiasFiltradas;
+  return noticiasProcessadas.filter(noticia => noticia !== null) as Noticia[]; // Filtra as notícias nulas
 };
 
 export const coletaDados = async (): Promise<void> => {
